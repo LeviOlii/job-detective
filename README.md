@@ -1,53 +1,145 @@
 # Job Detective 🕵️‍♂️💼
 
-O **Job Detective** é uma aplicação web que auxilia candidatos a se prepararem para processos seletivos através da geração automática de um dossiê completo sobre uma vaga e sua respectiva empresa.
+**Job Detective** é uma aplicação web que analisa o mercado de trabalho em tempo real para um determinado cargo e gera um relatório inteligente com as habilidades mais exigidas, tendências e dicas de estudo — tudo a partir de vagas reais coletadas automaticamente na internet.
+
+> Diferente de uma busca no Google ou de uma pergunta ao ChatGPT, o Job Detective raspa dezenas de vagas **abertas hoje**, cruza os dados e entrega um panorama real e atualizado do mercado.
+
+---
 
 ## 🎯 O Problema
-Antes de uma entrevista, candidatos perdem horas lendo descrições de vagas, caçando o site da empresa, tentando entender a cultura organizacional, identificando tecnologias relevantes e procurando notícias recentes. O Job Detective automatiza todo esse fluxo a partir de uma única URL.
 
-## 🚀 Como Funciona (Fluxo da Aplicação)
-1. **Entrada:** O usuário cola a URL de uma vaga pública (Gupy, Indeed, Catho, etc).
-2. **Coleta Inicial:** O sistema acessa a URL silenciosamente e extrai o texto da vaga.
-3. **Análise com IA:** A Inteligência Artificial estrutura os dados da vaga e identifica o nome da empresa, requisitos e tecnologias.
-4. **Descoberta:** O sistema usa um buscador para descobrir automaticamente qual é o site oficial da empresa.
-5. **Coleta Institucional:** O sistema acessa o site oficial da empresa para ler sobre sua Missão, Visão, Valores e História.
-6. **Dossiê Final:** A IA consolida todos os dados coletados e gera um relatório completo para o candidato, sugerindo até mesmo possíveis perguntas técnicas para a entrevista.
+Candidatos e estudantes que querem entrar ou se reposicionar no mercado de trabalho enfrentam um problema: **não sabem o que o mercado realmente está pedindo agora**.
 
-## 🛠️ Tecnologias Escolhidas e Arquitetura
+Perguntas como *"Preciso aprender TypeScript ou Vue?"*, *"Quanto ganha um Dev Backend Pleno em São Paulo?"* ou *"Remoto ainda é comum para esse cargo?"* não têm respostas fáceis ou centralizadas. O Job Detective responde tudo isso automaticamente, com base em dados reais e atuais.
 
-Optamos por uma arquitetura dividida (Frontend em React e Backend em Python) para maximizar a performance de scraping e o uso de Inteligência Artificial.
+---
+
+## 🚀 Funcionalidades do MVP
+
+O usuário preenche três campos simples:
+- **Cargo:** Ex: `Desenvolvedor Frontend`, `Analista de Dados`
+- **Cidade:** Ex: `São Paulo`, `Fortaleza`, `Remoto`
+- **Modalidade:** `Remoto`, `Presencial` ou `Híbrido`
+
+E recebe um **Dossiê de Mercado** contendo:
+
+| # | Funcionalidade | Descrição |
+|---|----------------|-----------|
+| RF01 | 🔍 **Busca de Vagas** | Localiza vagas abertas hoje para o cargo informado |
+| RF02 | 🤖 **Coleta Automatizada** | Acessa cada vaga encontrada e extrai o conteúdo completo |
+| RF03 | 🛠️ **Top Tecnologias** | Lista as habilidades técnicas mais exigidas com frequência |
+| RF04 | 🧠 **Habilidades Comportamentais** | Identifica as soft skills mais pedidas nas descrições |
+| RF05 | 📊 **Ranking de Requisitos** | Ordena os requisitos por importância e frequência |
+| RF06 | 💰 **Faixa Salarial** | Apresenta a faixa salarial média para o cargo e região |
+| RF07 | 📚 **Tópicos de Estudo** | Sugere o que estudar para se destacar no mercado atual |
+| RF08 | 🏢 **Perfil das Empresas** | Mostra quais tipos de empresa mais contratam para esse cargo |
+| RF09 | 🔄 **Filtros** | Permite refinar a busca por nível (Júnior/Pleno/Sênior) |
+
+---
+
+## 🛠️ Stack Tecnológica
+
+A aplicação é dividida em dois projetos independentes (monorepo), cada um com sua responsabilidade clara.
 
 ### Frontend
-- **Next.js (React / TypeScript):** Responsável pela interface do usuário, mantendo o sistema responsivo e gerenciando as chamadas assíncronas ao backend. Hospedado no **Vercel**.
+| Tecnologia | Por quê? |
+|------------|---------|
+| **Next.js (React + TypeScript)** | Interface responsiva com suporte a estados assíncronos. Hospedado no **Vercel**. |
+| **TailwindCSS + shadcn/ui** | Design moderno sem overhead de configuração. |
 
 ### Backend
-- **Python com FastAPI:** Linguagem nativa para scraping e integração com IA. O FastAPI permite subir endpoints de forma extremamente simples e rápida. Hospedado no **Render.com** (para evitar os limites de *timeout* e tamanho de serviços Serverless).
-- **Playwright:** Utilizado para acessar páginas web renderizadas em JavaScript (como Gupy e Indeed) e passar por bloqueios básicos.
-- **BeautifulSoup / Readability:** Faz a "limpeza" do HTML cru retornado pelo Playwright, mantendo apenas o texto útil para enviar à IA (economizando tokens e tempo).
-- **DuckDuckGo Search (`duckduckgo-search`):** Biblioteca Python gratuita utilizada para descobrir a URL oficial da empresa a partir do seu nome, sem custos com APIs do Google.
-- **Google Gemini API (AI Studio):** O "Cérebro" da aplicação (via plano gratuito). Lê o texto bagunçado, estrutura em JSON, toma decisões lógicas (ex: julgar qual é o site oficial na busca) e gera o dossiê final.
+| Tecnologia | Por quê? |
+|------------|---------|
+| **Python + FastAPI** | Linguagem nativa para IA e scraping. API assíncrona de alta performance. Hospedado no **Render.com**. |
+| **Playwright** | Abre páginas renderizadas em JavaScript (SPAs como LinkedIn, Gupy) como um navegador real, contornando bloqueios básicos. |
+| **BeautifulSoup** | Remove o "lixo" do HTML (scripts, menus, rodapés), deixando apenas o texto útil para a IA. |
+| **DuckDuckGo Search** | Localiza vagas abertas e dados salariais sem custo e sem chave de API. |
+| **Google Gemini API** | Lê os textos das vagas raspadas e extrai habilidades, tendências e insights em formato JSON estruturado. |
 
-## 🏗️ Estrutura e Padrões de Projeto
+---
 
-A aplicação adota uma **Arquitetura Desacoplada** (Client-Server), estruturada em um *Monorepo* com pastas independentes para frontend e backend, garantindo separação de responsabilidades e escalabilidade.
+## 🏗️ Arquitetura e Design Patterns
 
-### Padrões do Backend (Python)
-- **Service Layer Pattern:** Controladores de rotas não possuem regras de negócio. O fluxo de execução e orquestração de dependências (Playwright, Gemini, etc.) fica isolado na camada de serviços (`services/`).
-- **Adapter / Wrapper Pattern:** O SDK do Gemini e ferramentas externas são isolados em módulos/classes próprias (`ai/gemini_client.py`), impedindo o acoplamento excessivo dessas dependências ao núcleo do sistema.
-- **Data Transfer Objects (DTO):** Pydantic é utilizado rigorosamente para validação e tipagem dos dados JSON retornados pela IA antes de irem para o frontend.
+A aplicação adota uma **Arquitetura em Camadas (Layered Architecture)** com separação clara de responsabilidades.
 
-### Padrões do Frontend (React)
-- **Container / Presentational (Smart & Dumb Components):** As lógicas de requisição, estado e erros são mantidas em componentes *Container*, enquanto as estilizações (TailwindCSS / shadcn/ui) habitam componentes puramente visuais (*Presentational*).
-- **Feedback Assíncrono Contínuo:** Foco em atualizações de interface responsivas e `loading states` elaborados para suavizar a espera dos usuários durante o tempo de resposta da cadeia de chamadas da IA (~60s).
+### Fluxo de uma Requisição
+
+```
+[Usuário digita cargo + cidade]
+         ↓
+[Next.js] → POST /api/analyze-market → [FastAPI]
+                                            ↓
+                                   [routes.py] (Controller)
+                                            ↓
+                                [report_service.py] (Service Layer)
+                                    ↙        ↘          ↘
+                           [job_search.py] [browser.py] [analyzer.py]
+                            (DuckDuckGo)   (Playwright)   (Gemini AI)
+                                            ↓
+                              [cleaner.py] (BeautifulSoup)
+                                            ↓
+                              JSON estruturado → Frontend
+```
+
+### Design Patterns Aplicados
+
+#### 1. Service Layer Pattern
+O arquivo `routes.py` (controlador) **não contém lógica de negócio**. Ele apenas recebe a requisição HTTP e delega para `report_service.py`, que orquestra todo o fluxo.
+
+#### 2. Adapter / Wrapper Pattern
+Cada ferramenta externa vive isolada no seu próprio módulo:
+- `scraping/browser.py` → encapsula o Playwright
+- `scraping/job_search.py` → encapsula o DuckDuckGo
+- `ai/analyzer.py` → encapsula o Gemini
+
+Se o Google descontinuar a API Gemini, apenas `analyzer.py` precisa ser alterado. O restante do sistema permanece intacto.
+
+#### 3. Data Transfer Objects (DTO) com Pydantic
+Todas as entradas e saídas são validadas por schemas Pydantic. O frontend sempre recebe um contrato de dados previsível e tipado.
+
+### Estrutura de Pastas
+
+```
+job-detective/
+├── frontend/                     # Next.js (React + TypeScript)
+│   ├── src/
+│   │   ├── app/                  # Roteamento (App Router)
+│   │   ├── components/           # Componentes visuais (Cards, Tags, Gráficos)
+│   │   ├── hooks/                # Lógicas de estado reutilizáveis
+│   │   ├── services/             # Chamadas HTTP ao Backend
+│   │   └── types/                # Interfaces TypeScript
+│   └── package.json
+│
+└── backend/                      # Python (FastAPI)
+    ├── app/
+    │   ├── api/                  # Rotas HTTP (Controllers)
+    │   ├── models/               # Schemas Pydantic (DTOs)
+    │   ├── services/             # Regras de negócio (Maestro)
+    │   ├── scraping/             # Playwright + DuckDuckGo + BeautifulSoup
+    │   └── ai/                   # Integração com Gemini e Prompts
+    ├── requirements.txt
+    └── main.py                   # Ponto de entrada
+```
+
+---
 
 ## 📦 Escopo do MVP
-- **100% Gratuito:** Deploy e uso de APIs sem nenhum custo.
-- Suporte a páginas de vagas públicas (sem exigência de login/autenticação).
-- Tempo de resposta alvo: Inferior a 60 segundos.
-- Sem banco de dados ou contas de usuários nesta versão inicial.
 
-## 🔮 Possíveis Melhorias (Futuro)
-- Sistema de Login / Autenticação de Usuários.
-- Banco de dados (PostgreSQL / Supabase) para salvar o histórico de relatórios de cada candidato.
-- **Match de Vaga:** Upload do Currículo do candidato (PDF) para gerar um "Score de Aderência" à vaga.
-- Integração profunda com LinkedIn (através de cookies/contas de serviço) para extrair o perfil dos recrutadores.
+- ✅ Aplicação **100% gratuita** (deploy + APIs sem custo)
+- ✅ Suporte a vagas públicas (sem login nas plataformas)
+- ✅ Tempo de resposta alvo: **inferior a 30 segundos**
+- ✅ Stateless — sem banco de dados nesta versão
+- ✅ Busca focada em LinkedIn e Gupy; fallback para Catho se necessário
+
+---
+
+## 🔮 Melhorias Futuras
+
+| Feature | Descrição |
+|---------|-----------|
+| 💾 **Histórico de Relatórios** | Banco de dados (PostgreSQL/Supabase) para salvar buscas anteriores |
+| 📄 **Match de Currículo** | Upload de PDF do currículo e cálculo de % de aderência ao perfil ideal do mercado |
+| 🎤 **Simulador de Entrevista** | Chat interativo com a IA fazendo perguntas técnicas baseadas no cargo pesquisado |
+| 🔔 **Alertas de Mercado** | Monitoramento contínuo e notificação quando o cenário do mercado mudar |
+| 🌎 **Suporte a Regiões Internacionais** | Análise de mercado para vagas nos EUA, Europa e outros países |
+| 📈 **Gráficos e Visualizações** | Dashboard interativo com gráficos de tendência ao longo do tempo |
